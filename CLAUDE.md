@@ -12,6 +12,14 @@ This is a 2-day hackathon project. The aim of the project is to explore the Open
   - `meta/BAKERY.md` - Business Context for AI at Hearth & Wheel Bakery - this file contains the initial proposal for the made up business to be used as input for writing the knowledgebase itself, some rationale for why this business/domains/concepts were chosen, and some prompt examples that rely on the business knowledge.
 - `open-knowledge-format/` - Files copied from the `GoogleCloudPlatform/open-knowledge-format` repo on GitHub.
 - `knowledge/hearth-and-wheel/` - The OKF bundle (the bakery knowledge itself). Three domain folders (`bakehouse/`, `wholesale-round/`, `shop-and-customer-line/`), 7 concepts, each folder with an `index.md`; root `index.md` (`okf_version`) and `log.md`. Concepts are `generated` by Claude and deliberately carry no `verified`/`sources` (no human review yet; a `sources` entry pointing at `meta/` would leak the hackathon). Uses the `not:` disambiguation key from the upstream `acme_retail` example bundle. Links are bundle-absolute (`/bakehouse/ember-index.md`).
+- `mcp-server/` - General-purpose TypeScript MCP server that serves any OKF bundle (`OKF_BUNDLE_PATH`) over HTTP or stdio. Tools: `list_knowledge`, `read_knowledge`, `search_knowledge`.
+- `docs/` - Guides for the MCP server.
+
+## Documentation (read these first)
+
+- [`docs/mcp-server.md`](docs/mcp-server.md) - The MCP server: config, tools/endpoints, and how it reads a bundle.
+
+Keep these in sync when you change the server or the layout.
 
 ## Ground Rules
 

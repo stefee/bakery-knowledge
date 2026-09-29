@@ -3,3 +3,7 @@
 This repo contains an exploration of Google's [Open Knowledge Format](https://github.com/GoogleCloudPlatform/open-knowledge-format).
 
 The full OKF specification is here: [open-knowledge-format/SPEC.md](open-knowledge-format/SPEC.md).
+
+## Docs
+
+- [MCP server](docs/mcp-server.md) - the general-purpose OKF MCP server and its tools.
