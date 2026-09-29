@@ -61,6 +61,8 @@ Tool permission prompts appear as normal; approve the `mcp__knowledge__*` calls 
 3. Escalate to a cross-domain question: *"Walk me through this morning: any Nightwatch alerts, what that means for the Ember Index, whether the Kettle Process batches are affected, and who's looming on the Wheel this week."* This is the "network of dependencies" payload; see the full prompt list in [meta/BAKERY.md](../meta/BAKERY.md).
 4. (Optional) Show the isolation: ask either agent to read `../../knowledge/...` or to search the disk for the knowledge files. It will be blocked. See "Verifying isolation" below.
 
+> **Note:** the `with` agent only uses the knowledge tools if it decides to. Without a nudge it answered "What is Looming?" without consulting them at all, so the `with` seed contains a short `CLAUDE.md` "Company knowledge" section (look terms up, including ordinary-looking words; don't guess). With it, the agent searched and answered correctly, made no knowledge calls for a generic coding task, and said "not found" for an unknown term.
+
 ## Verifying isolation
 
 Use benign-sounding tasks; the model tends to refuse overtly adversarial "break out of your sandbox" prompts, which tests its willingness rather than the enforcement. For example, in either demo:
@@ -80,6 +82,7 @@ That should work via `mcp__knowledge__*` ("higher is worse", oven instability). 
 | `Cannot find module .../dist/index.js` or `knowledge` server fails in `/mcp` | Build the server: `cd mcp-server && npm install && npm run build`. |
 | Sandbox fails to start | The launcher sets `failIfUnavailable`, so it refuses to run unsandboxed. Seatbelt needs macOS; check `claude` is up to date. |
 | `with` agent doesn't use the knowledge | Check `/mcp`. Check the bundle path exists and has `.md` files. Try asking it to "search the knowledge base for X". |
+| Agent doesn't consult the knowledge base | The tools are available but the model must choose to use them. Ask explicitly ("search the knowledge base for X"), or check that `demos/with-knowledge/CLAUDE.md` is still present and hasn't been trimmed. |
 | Stale/odd state in a demo | Just relaunch; the workspace is recreated each time. |
 | You changed knowledge files but the agent doesn't see them | It should, since the server re-reads on every call. Make sure you edited `knowledge/hearth-and-wheel/`, and start a fresh tool call. |
 
@@ -87,5 +90,5 @@ That should work via `mcp__knowledge__*` ("higher is worse", oven instability). 
 
 - **Edit knowledge:** change files in `knowledge/hearth-and-wheel/` (OKF format, see [open-knowledge-format/SPEC.md](../open-knowledge-format/SPEC.md)). No restart needed.
 - **Edit the server:** change `mcp-server/src/`, rebuild, relaunch the **with** demo. See [mcp-server.md](mcp-server.md).
-- **Change what the demos start with:** add files to `demos/with-knowledge/` or `demos/without-knowledge/`; they're copied into the workspace on each launch. Keep the two folders equivalent and free of hackathon/bakery wording.
+- **Change what the demos start with:** add files to `demos/with-knowledge/` or `demos/without-knowledge/`; they're copied into the workspace on each launch. Keep the two folders equivalent apart from the knowledge hint in `with-knowledge/CLAUDE.md`, and free of hackathon/bakery wording.
 - **Change isolation:** edit `scripts/run-demo.sh` after reading [demo-internals.md](demo-internals.md).
