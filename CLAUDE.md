@@ -13,13 +13,34 @@ This is a 2-day hackathon project. The aim of the project is to explore the Open
 - `open-knowledge-format/` - Files copied from the `GoogleCloudPlatform/open-knowledge-format` repo on GitHub.
 - `knowledge/hearth-and-wheel/` - The OKF bundle (the bakery knowledge itself). Three domain folders (`bakehouse/`, `wholesale-round/`, `shop-and-customer-line/`), 7 concepts, each folder with an `index.md`; root `index.md` (`okf_version`) and `log.md`. Concepts are `generated` by Claude and deliberately carry no `verified`/`sources` (no human review yet; a `sources` entry pointing at `meta/` would leak the hackathon). Uses the `not:` disambiguation key from the upstream `acme_retail` example bundle. Links are bundle-absolute (`/bakehouse/ember-index.md`).
 - `mcp-server/` - General-purpose TypeScript MCP server that serves any OKF bundle (`OKF_BUNDLE_PATH`) over HTTP or stdio. Tools: `list_knowledge`, `read_knowledge`, `search_knowledge`.
-- `docs/` - Guides for the MCP server.
+- `demos/with-knowledge/`, `demos/without-knowledge/` - Seed folders for the two demo Claude Code projects (currently empty). They are never run in place; see `scripts/run-demo.sh`. Keep hackathon/bakery-meta wording out of these folders.
+- `docs/` - Guides for running the demos, demo sandbox internals, and the MCP server.
+- `scripts/run-demo.sh` - Launches a sandboxed demo session (no Docker). Copies the seed into a fresh, neutrally named workspace (`~/.agent-workspaces/{a,b}/project`) outside the repo, generates sandbox settings + MCP config into `~/.claude/.agent-gen/`, and starts `claude` with `--settings`, `--mcp-config`, `--strict-mcp-config`. Only `with` gets the knowledge MCP server (stdio).
 
 ## Documentation (read these first)
 
+- [`docs/running-the-demos.md`](docs/running-the-demos.md) - Guide: how to run and present the two demos.
+- [`docs/demo-internals.md`](docs/demo-internals.md) - How and why the sandboxing/isolation works; leak vectors and gotchas.
 - [`docs/mcp-server.md`](docs/mcp-server.md) - The MCP server: config, tools/endpoints, and how it reads a bundle.
 
-Keep these in sync when you change the server or the layout.
+Keep these in sync when you change the launcher, the server, or the layout.
+
+## Running the demos
+
+```
+cd mcp-server && npm install && npm run build   # once
+scripts/run-demo.sh with        # knowledge via MCP only
+scripts/run-demo.sh without     # no knowledge
+```
+
+## Sandboxing notes (verified empirically, Claude Code 2.1.x)
+
+- `sandbox.filesystem.denyRead` only covers Bash. Read/Grep/Glob need `Read(//abs/path/**)` permission deny rules (Glob/Grep rules are invalid; Read rules cover all file-reading tools).
+- Deny rules are shown to the agent, so deny a broad parent (`~/src`) instead of listing repo folders, which would leak names.
+- Claude Code lists its own `--settings` file path to the agent, so keep generated config outside the repo.
+- Running inside the repo would leak repo names via cwd, git status, and parent CLAUDE.md; hence the neutral workspace copy (each launch resets it).
+- MCP servers run unsandboxed; `ps` is blocked for the agent so the command line isn't visible.
+- Test isolation by asking benign-looking tasks; the model refuses overtly adversarial "escape the sandbox" prompts, so those don't test enforcement.
 
 ## Ground Rules
 

@@ -1,6 +1,6 @@
 # The OKF MCP server
 
-`mcp-server/` is a small, general-purpose [MCP](https://modelcontextprotocol.io) server that serves any [Open Knowledge Format](../open-knowledge-format/SPEC.md) bundle to an agent. Nothing in it is bakery-specific; point it at a different bundle and it serves that instead.
+`mcp-server/` is a small, general-purpose [MCP](https://modelcontextprotocol.io) server that serves any [Open Knowledge Format](../open-knowledge-format/SPEC.md) bundle to an agent. Nothing in it is bakery-specific; point it at a different bundle and it serves that instead. For how it's wired into the demos, see [demo-internals.md](demo-internals.md).
 
 ## Running it
 
