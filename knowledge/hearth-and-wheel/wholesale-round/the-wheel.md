@@ -3,7 +3,7 @@ type: Schedule
 title: The Wheel
 description: The weekly delivery rotation board showing which constellations receive bread on which days, and in what delivery order.
 tags: [wholesale, delivery, schedule, rotation]
-generated: { by: claude-code/claude-sonnet-5-5, at: 2026-09-29T12:00:00Z }
+generated: { by: claude-code/claude-sonnet-5-5, at: 2026-09-29T10:22:51Z }
 status: stable
 not:
   - term: "a per-cafe delivery schedule"

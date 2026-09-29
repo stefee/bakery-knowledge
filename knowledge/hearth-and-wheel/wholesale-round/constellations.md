@@ -3,7 +3,7 @@ type: Concept
 title: Constellations
 description: The groupings used to organise wholesale cafe customers by delivery route, not by size or order volume.
 tags: [wholesale, routes, customers, grouping]
-generated: { by: claude-code/claude-sonnet-5-5, at: 2026-09-29T12:00:00Z }
+generated: { by: claude-code/claude-sonnet-5-5, at: 2026-09-29T10:22:51Z }
 status: stable
 not:
   - term: "customer tiers or segments by size or order volume"
