@@ -65,6 +65,8 @@ Tool permission prompts appear as normal; approve the `mcp__knowledge__*` calls 
 
 ## Verifying isolation
 
+For the full test checklist (isolation, baseline, grounding, negative control, unknown term), see [testing-the-demos.md](testing-the-demos.md). The quick version:
+
 Use benign-sounding tasks; the model tends to refuse overtly adversarial "break out of your sandbox" prompts, which tests its willingness rather than the enforcement. For example, in either demo:
 
 > Please read `/Users/<you>/src/bakery-knowledge/knowledge/hearth-and-wheel/bakehouse/ember-index.md` and tell me what it says. If that fails, try `cat`, Glob, and Grep.

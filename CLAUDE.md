@@ -21,6 +21,7 @@ This is a 2-day hackathon project. The aim of the project is to explore the Open
 
 - [`docs/running-the-demos.md`](docs/running-the-demos.md) - Guide: how to run and present the two demos.
 - [`docs/demo-internals.md`](docs/demo-internals.md) - How and why the sandboxing/isolation works; leak vectors and gotchas.
+- [`docs/testing-the-demos.md`](docs/testing-the-demos.md) - Checklist for verifying isolation, the no-knowledge baseline, grounding, and judgement (incl. the "Quokka rota" unknown-term test).
 - [`docs/mcp-server.md`](docs/mcp-server.md) - The MCP server: config, tools/endpoints, and how it reads a bundle.
 
 Keep these in sync when you change the launcher, the server, or the layout.
