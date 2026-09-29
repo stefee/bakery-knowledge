@@ -40,6 +40,7 @@ scripts/run-demo.sh without     # no knowledge
 - Deny rules are shown to the agent, so deny a broad parent (`~/src`) instead of listing repo folders, which would leak names.
 - Claude Code lists its own `--settings` file path to the agent, so keep generated config outside the repo.
 - Running inside the repo would leak repo names via cwd, git status, and parent CLAUDE.md; hence the neutral workspace copy (each launch resets it).
+- Never `export` repo-derived variables in the launcher: the agent's Bash inherits the environment (an earlier version leaked the repo path via `DEMO_ROOT`/`OLDPWD`). `~/.claude.json` is a *sibling* of `~/.claude/`, so denying the directory doesn't cover it. The denied list is documented in `docs/demo-internals.md`.
 - MCP servers run unsandboxed; `ps` is blocked for the agent so the command line isn't visible.
 - Test isolation by asking benign-looking tasks; the model refuses overtly adversarial "escape the sandbox" prompts, so those don't test enforcement.
 

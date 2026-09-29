@@ -40,7 +40,7 @@ scripts/run-demo.sh with
 scripts/run-demo.sh without
 ```
 
-Each launch resets that demo's workspace to a fresh copy of its seed folder, so anything the agent created in a previous run is gone. The two demos use separate workspaces, so running them side by side is fine.
+Each launch resets that demo's workspace to a fresh copy of its seed folder, so anything the agent created in a previous run is gone. The two demos use separate workspaces, so running them side by side is fine (each can't see the other's). Only one session per demo at a time: the launcher refuses to start a demo that is already running, since the relaunch would delete its workspace.
 
 Extra arguments are passed straight through to `claude`, e.g. a one-shot prompt:
 
@@ -82,6 +82,10 @@ That should work via `mcp__knowledge__*` ("higher is worse", oven instability). 
 | Symptom | Likely cause / fix |
 |---|---|
 | `Cannot find module .../dist/index.js` or `knowledge` server fails in `/mcp` | Build the server: `cd mcp-server && npm install && npm run build`. |
+| `run-demo: knowledge server not built` | `cd mcp-server && npm install && npm run build`. The launcher checks this so `with` can't silently run without its knowledge. |
+| `run-demo: a 'with' demo is already running (pid N)` | Close that session first. If it's gone, the lock is stale and is ignored on the next launch (it only blocks a live PID). |
+| `run-demo: repo is directly under '...'` | Move the repo into a subdirectory such as `~/src`. The repo's parent directory is hidden from the agent, and the workspace lives under `$HOME`. |
+| `run-demo: '<tool>' not found on PATH` | Install `node`, `rsync` or `claude`. |
 | Sandbox fails to start | The launcher sets `failIfUnavailable`, so it refuses to run unsandboxed. Seatbelt needs macOS; check `claude` is up to date. |
 | `with` agent doesn't use the knowledge | Check `/mcp`. Check the bundle path exists and has `.md` files. Try asking it to "search the knowledge base for X". |
 | Agent doesn't consult the knowledge base | The tools are available but the model must choose to use them. Ask explicitly ("search the knowledge base for X"), or check that `demos/with-knowledge/CLAUDE.md` is still present and hasn't been trimmed. |
