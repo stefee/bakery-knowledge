@@ -32,7 +32,7 @@ At launch, `scripts/run-demo.sh` creates:
 
 1. Picks the seed and slot (`with` = `a`, `without` = `b`).
 2. Preflight: checks that `node`, `rsync` and `claude` exist; for `with`, that the MCP server is built; and that the repo's parent directory is not `/` or `$HOME` (it is denied to the agent, so the workspace would be denied too). Any failure exits with a message instead of quietly running a demo that differs from what you expect.
-3. Takes a per-slot lock (`~/.claude/.agent-gen/<slot>/lock`, holding the PID; `exec` keeps the PID, so it is the `claude` process). A second launch of a live slot is refused, because step 4 would delete the workspace under a running session. A lock left by a dead process is ignored.
+3. Takes a per-slot lock (`~/.claude/.agent-gen/<slot>/lock`, holding the PID; `exec` keeps the PID, so it is the `claude` process). A second launch of a live slot is refused, because step 4 would delete the workspace under a running session. A lock left by a dead process is ignored, and so is one whose PID has since been reused by an unrelated process: the holder only counts if its command line contains this slot's generated `settings.json` path.
 4. Deletes and recreates the workspace, then `rsync`s the seed into it.
 5. Generates `settings.json` and `mcp.json` (with absolute paths) into `~/.claude/.agent-gen/<slot>/`. The config variables are passed to that one `node` command only, not exported.
 6. `cd`s into the workspace, clears `OLDPWD` (which `cd` exports and which would be the repo root), and `exec`s:
@@ -99,7 +99,7 @@ Claude Code tells the agent the path of its `--settings` file (it protects it fr
 - Your **global** `~/.claude/CLAUDE.md` is still loaded into both demos. It's identical for both, so it doesn't affect the comparison, but it isn't hidden.
 - The MCP server runs **unsandboxed** as you (Claude Code doesn't sandbox MCP processes). That's by design: it is the one component allowed to read the bundle. The agent couldn't see its command line in testing because `ps` is blocked. That comes from Claude Code's default sandbox behaviour, not from anything this launcher configures, so re-check it after upgrades.
 - The agent still has your normal **network access**, including WebFetch/WebSearch/`curl`. If this repo were ever public, an agent could search for it. Keep the repo private while running demos, or deny those tools.
-- Claude Code's user settings still apply (`--setting-sources` is not restricted), so your hooks, plugins and model choice carry into both demos. Keep both runs on the same model when comparing.
+- Claude Code's user settings still apply (`--setting-sources` is not restricted), so your hooks, plugins and model choice carry into both demos. The launcher deliberately does not pin a model (a fixed one would quietly change what every result means). To compare like with like, pass the same `--model <name>` to both: `scripts/run-demo.sh with --model haiku`.
 - Your shell's **environment** is inherited. Nothing repo-specific is added by the launcher, but variables you already have set (e.g. `PROJECTS=~/src`, `PATH` entries) are visible to the agent.
 - Claude Code's per-session scratch directories under `/private/tmp/claude-<uid>/` are not denied: the demo sessions need their own, so denying the directory would break them. Directories from *development* sessions in this repo have the repo path in their name and remain readable.
 - `ls ~/.agent-workspaces` works and shows the two slot names; only the other slot's contents are denied.

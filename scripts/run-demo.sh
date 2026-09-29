@@ -50,9 +50,14 @@ esac
 GEN="$HOME/.claude/.agent-gen/$SLOT"; mkdir -p "$GEN"
 
 # One session per slot: relaunching would delete the workspace under a live session.
-# (exec keeps this PID, so the lock holder is the claude process.)
-if [ -f "$GEN/lock" ] && kill -0 "$(cat "$GEN/lock")" 2>/dev/null; then
-  die "a '$MODE' demo is already running (pid $(cat "$GEN/lock"))"
+# (exec keeps this PID, so the lock holder is the claude process.) A bare "is that PID alive?"
+# check would wrongly refuse if the OS had reused a dead session's PID for something else, so
+# also require that the process is a claude started with this slot's generated settings file.
+if [ -f "$GEN/lock" ]; then
+  holder="$(cat "$GEN/lock")"
+  if kill -0 "$holder" 2>/dev/null && ps -p "$holder" -o command= 2>/dev/null | grep -qF -- "$GEN/settings.json"; then
+    die "a '$MODE' demo is already running (pid $holder)"
+  fi
 fi
 echo $$ > "$GEN/lock"
 

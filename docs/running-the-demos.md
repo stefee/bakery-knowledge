@@ -48,6 +48,8 @@ Extra arguments are passed straight through to `claude`, e.g. a one-shot prompt:
 scripts/run-demo.sh with -p "What is the Ember Index?" --allowedTools "mcp__knowledge"
 ```
 
+The demos use your normal Claude Code model. Behaviour differs between models (notably how readily the agent consults the knowledge base), so when comparing the two demos, or presenting them, start both with the same explicit model, e.g. `scripts/run-demo.sh with --model haiku` and `scripts/run-demo.sh without --model haiku`.
+
 ### Confirming the knowledge is connected
 
 In the **with** session, run `/mcp`. You should see a `knowledge` server with three tools (`list_knowledge`, `read_knowledge`, `search_knowledge`). In the **without** session there should be no MCP servers. When the agent uses the knowledge you'll see tool calls named `mcp__knowledge__...`.
