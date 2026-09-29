@@ -12,16 +12,27 @@ export interface Concept {
 }
 
 const RESERVED = new Set(["index.md", "log.md"]);
-const FRONTMATTER = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/;
-const MD_LINK = /\[[^\]]*\]\(([^)\s#]+\.md)(?:#[^)]*)?\)/g;
+// The frontmatter block may be empty (`---\n---`), hence the optional middle group.
+const FRONTMATTER = /^---\r?\n(?:([\s\S]*?)\r?\n)?---\r?\n?([\s\S]*)$/;
+// [text](target.md), [text](target.md#anchor), [text](target.md "title"). Group 1 is the target.
+const MD_LINK = /\[[^\]]*\]\(\s*([^)\s#]+\.md)(?:#[^)\s]*)?(?:\s+(?:"[^"]*"|'[^']*'))?\s*\)/g;
+// Links shown as examples inside code are not relationships.
+const FENCED_CODE = /^ {0,3}(```|~~~)[\s\S]*?^ {0,3}\1/gm;
+const INLINE_CODE = /`[^`\n]*`/g;
 
 /** Resolve a markdown link target to a concept ID, or null if it leaves the bundle. */
 function linkToId(target: string, fromId: string): string | null {
   if (/^[a-z][a-z0-9+.-]*:/i.test(target)) return null;
+  try {
+    target = decodeURIComponent(target);
+  } catch {
+    // Not valid percent-encoding: use the text as written.
+  }
   const resolved = target.startsWith("/")
     ? path.posix.normalize(target.slice(1))
     : path.posix.normalize(path.posix.join(path.posix.dirname(fromId), target));
-  if (resolved.startsWith("..")) return null;
+  // Leaving the bundle root: exactly `..` or a `../` prefix (not a file merely named `..foo`).
+  if (resolved === ".." || resolved.startsWith("../")) return null;
   return resolved.replace(/\.md$/, "");
 }
 
@@ -31,26 +42,35 @@ export function parseConcept(id: string, raw: string): Concept {
   let body = raw;
   if (match) {
     try {
-      const parsed = parseYaml(match[1]);
-      if (parsed && typeof parsed === "object") frontmatter = parsed as Record<string, unknown>;
+      const parsed = parseYaml(match[1] ?? "");
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        frontmatter = parsed as Record<string, unknown>;
+      }
     } catch {
       // Consumers MUST tolerate what they can't parse; treat as a bare document.
     }
     body = match[2];
   }
   const links = new Set<string>();
-  for (const m of body.matchAll(MD_LINK)) {
+  const prose = body.replace(FENCED_CODE, "").replace(INLINE_CODE, "");
+  for (const m of prose.matchAll(MD_LINK)) {
     const target = linkToId(m[1], id);
     if (target && target !== id) links.add(target);
   }
   return { id, frontmatter, body, links: [...links].sort() };
 }
 
+/** Hidden directories (.git, ...) and dependency folders are never part of a bundle. */
+const SKIPPED_DIRS = (name: string) => name.startsWith(".") || name === "node_modules";
+
 async function* walk(dir: string): AsyncGenerator<string> {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) yield* walk(full);
-    else if (entry.isFile() && entry.name.endsWith(".md")) yield full;
+    if (entry.isDirectory()) {
+      if (!SKIPPED_DIRS(entry.name)) yield* walk(full);
+    } else if (entry.isFile() && entry.name.endsWith(".md")) {
+      yield full;
+    }
   }
 }
 

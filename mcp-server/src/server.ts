@@ -19,7 +19,7 @@ export function createServer(bundle: Bundle, name = "okf-knowledge"): McpServer 
     "list_knowledge",
     {
       description:
-        "Browse the organisation's knowledge base. Returns the index for a directory (or the root) followed by the concepts it contains. Start here to discover what knowledge exists.",
+        "Browse the organisation's knowledge base. Returns the index for a directory (or the root) followed by every concept under it, including those in subdirectories. Start here to discover what knowledge exists.",
       inputSchema: {
         directory: z.string().optional().describe("Directory to list, e.g. 'finance'. Omit for the root."),
       },
@@ -76,7 +76,7 @@ export function createServer(bundle: Bundle, name = "okf-knowledge"): McpServer 
         "Keyword search across the knowledge base (titles, descriptions, tags, content). Use for terms, names, or jargon you don't recognise.",
       inputSchema: {
         query: z.string().describe("Words to look for."),
-        limit: z.number().int().min(1).max(50).optional(),
+        limit: z.number().int().min(1).max(50).optional().describe("Maximum number of results (default 10)."),
       },
     },
     async ({ query, limit }) => {
