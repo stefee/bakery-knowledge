@@ -4,6 +4,17 @@
 # Timestamps are plain strings (ISO 8601 with explicit offset, e.g. 2026-06-30T14:00:00Z):
 # Pages CMS date formatting uses local time, which cannot emit a true UTC "Z".
 
+actions:
+  - name: open-editing-pr
+    label: Open PR to main
+    workflow: open-editing-pr.yml
+    ref: main
+    cancelable: false
+    confirm:
+      title: Open a pull request?
+      message: Opens a PR merging the editing branch into main for review.
+      button: Open PR
+
 content:
   # --- Concepts (SPEC §4): every .md except the reserved index.md / log.md ---
   - name: concepts
