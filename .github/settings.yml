@@ -1,0 +1,42 @@
+# Repository settings, synced by the Settings app (https://github.com/apps/settings)
+# from the default branch. Once this is live, main can only change through a reviewed PR.
+
+repository:
+  # Merging the editing -> main PR must not delete the editing branch (the CMS writes there).
+  delete_branch_on_merge: false
+
+branches:
+  - name: main
+    protection:
+      # GitHub never counts a PR author's own approval, so a second person (or the
+      # actions bot opening the PR) is what makes the approval independent.
+      required_pull_request_reviews:
+        required_approving_review_count: 1
+        dismiss_stale_reviews: true
+        require_code_owner_reviews: false
+      required_status_checks: null
+      # Applies to admins too, so an admin's CMS token cannot push straight to main.
+      enforce_admins: true
+      # Team/user push restrictions are only available on organisation-owned repos.
+      restrictions: null
+
+rulesets:
+  # The CMS may only write to `editing`. Every other branch (main is covered above)
+  # is locked against creation, direct updates, force pushes and deletion.
+  # No bypass actors: this applies to admins as well.
+  - name: cms writes to editing only
+    target: branch
+    enforcement: active
+    conditions:
+      ref_name:
+        include:
+          - "~ALL"
+        exclude:
+          - refs/heads/editing
+          - refs/heads/main
+    rules:
+      - type: creation
+      - type: update
+      - type: deletion
+      - type: non_fast_forward
+    bypass_actors: []
