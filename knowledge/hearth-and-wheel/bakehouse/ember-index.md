@@ -15,7 +15,6 @@ not:
       or unevenly.
     instead: "read a high Ember Index as a warning: risk of scorched crusts or
       undercooked loaves"
-generated: { by: human:stefee, at: 2026-09-30T14:28:20Z }
 ---
 # Definition
 
@@ -25,7 +24,7 @@ The **Ember Index** is a score from **0 to 100**, generated from the wood-fired 
 
 # How it is produced
 
-The Index is logged and calculated overnight by [Nightwatch](/bakehouse/nightwatch.md) from its temperature probes. An overnight Nightwatch alert usually means the Ember Index has just spiked.
+The Index is logged and calculated overnight by [Nightwatch](/bakehouse/nightwtch.md) from its temperature probes. An overnight Nightwatch alert usually means the Ember Index has just spiked.
 
 # What causes a spike
 
