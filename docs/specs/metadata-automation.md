@@ -1,6 +1,6 @@
 # OKF metadata automation: specification
 
-**Status:** Reviewed and approved in design; nothing in this document is implemented yet. §14 records the questions raised and how they were resolved; none are open.
+**Status:** Reviewed and approved in design. Implemented on branch `okf-metadata-automation` (§18 steps 1 to 8); the §13 rollout has not started. §14 records the questions raised and how they were resolved; none are open.
 
 This specifies how the repo keeps part of the OKF bundle's metadata up to date automatically, from git history, so that humans and agents working through the CMS don't have to. It builds on [SPEC.md](../../open-knowledge-format/SPEC.md) (OKF v0.2).
 

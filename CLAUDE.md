@@ -11,12 +11,14 @@ This is a 2-day hackathon project. The aim of the project is to explore the Open
 - `meta/` - Files related to the hackathon.
   - `meta/BAKERY.md` - Business Context for AI at Hearth & Wheel Bakery - this file contains the initial proposal for the made up business to be used as input for writing the knowledgebase itself, some rationale for why this business/domains/concepts were chosen, and some prompt examples that rely on the business knowledge.
 - `open-knowledge-format/` - Files copied from the `GoogleCloudPlatform/open-knowledge-format` repo on GitHub.
-- `knowledge/hearth-and-wheel/` - The OKF bundle (the bakery knowledge itself). Three domain folders (`bakehouse/`, `wholesale-round/`, `shop-and-customer-line/`), 7 concepts, each folder with an `index.md`; root `index.md` (`okf_version`) and `log.md`. Concepts are `generated` by Claude and deliberately carry no `verified`/`sources` (no human review yet; a `sources` entry pointing at `meta/` would leak the hackathon). Uses the `not:` disambiguation key from the upstream `acme_retail` example bundle. Links are bundle-absolute (`/bakehouse/ember-index.md`).
-- `.pages.yml` - [Pages CMS](https://pagescms.org) config for editing the OKF bundle in `knowledge/hearth-and-wheel/` per the spec (concept frontmatter fields, reserved `index.md`/`log.md` files). Update it when the bundle path or the spec's fields change. CMS edits land on the `editing` branch; the `open-editing-pr` action (`.github/workflows/open-editing-pr.yml`, dispatched from Pages CMS's Actions page) opens a PR from `editing` into `main` for review.
-- `.github/settings.yml` - Repo settings synced by the [Settings app](https://github.com/apps/settings): `main` requires a PR with 1 approval (enforced for admins), and a ruleset locks every branch except `editing` and `main` so the CMS can only write to `editing`. Direct pushes to `main` are not possible once this is live; merged branches are not auto-deleted so `editing` survives.
+- `knowledge/hearth-and-wheel/` - The OKF bundle (the bakery knowledge itself). Three domain folders (`bakehouse/`, `wholesale-round/`, `shop-and-customer-line/`), 7 concepts, each folder with an `index.md`; root `index.md` (`okf_version`) and `log.md`. Concepts deliberately carry no `verified`/`sources` (no human review yet; a `sources` entry pointing at `meta/` would leak the hackathon). `generated` is maintained by CI from git history (see Metadata maintenance); don't hand-write it. Uses the `not:` disambiguation key from the upstream `acme_retail` example bundle. Links are bundle-absolute (`/bakehouse/ember-index.md`).
+- `.pages.yml` - [Pages CMS](https://pagescms.org) config for editing the OKF bundle in `knowledge/hearth-and-wheel/` per the spec (concept frontmatter fields and the root `index.md`; CI-owned files are deliberately not exposed). Update it when the bundle path or the spec's fields change. CMS edits land on the `editing` branch; the `open-editing-pr` action (`.github/workflows/open-editing-pr.yml`, dispatched from Pages CMS's Actions page) opens a PR from `editing` into `main` for review.
+- `.github/settings.yml` - Repo settings synced by the [Settings app](https://github.com/apps/settings): `main` requires a PR with 1 approval (enforced for admins). Every other branch is writable (the old `cms writes to editing only` ruleset was removed). Direct pushes to `main` are not possible once this is live; merged branches are not auto-deleted so `editing` survives. Once `okf-check` is made a required status check (follow-up PR, see `docs/metadata-maintenance.md`), non-conformant or drifting bundles can't merge either.
+- `scripts/okf-maintain/` - TypeScript package (`sync` and `check` commands, only dependency `yaml`) that maintains the CI-owned metadata of the bundle from git history. Run its tests with `cd scripts/okf-maintain && npm test`. Design: `docs/specs/metadata-automation.md`.
+- `.github/workflows/okf-sync.yml` - Runs `okf-maintain` on every push to `editing` (sync, commit as the bot, check, post the `okf-check` status) and `check` on PRs to `main` from other branches. After it or the script changes, merge `main` into `editing` by hand.
 - `mcp-server/` - General-purpose TypeScript MCP server that serves any OKF bundle (`OKF_BUNDLE_PATH`) over HTTP or stdio. Tools: `list_knowledge`, `read_knowledge`, `search_knowledge`. Run its tests with `cd mcp-server && npm test`.
 - `demos/with-knowledge/`, `demos/without-knowledge/` - Seed folders for the two demo Claude Code projects. `with-knowledge/CLAUDE.md` is a deliberately short "Company knowledge" section telling the agent to look up company terms (including ordinary-looking words) in the knowledge base and not to guess; keep it short and free of bakery terms. `without-knowledge/` is empty. They are never run in place; see `scripts/run-demo.sh`. Keep hackathon/bakery-meta wording out of these folders.
-- `docs/` - Guides for running the demos, demo sandbox internals, and the MCP server.
+- `docs/` - Guides for running the demos, demo sandbox internals, the MCP server, and metadata maintenance; `docs/specs/` holds design specs.
 - `scripts/run-demo.sh` - Launches a sandboxed demo session (no Docker). Copies the seed into a fresh, neutrally named workspace (`~/.agent-workspaces/{a,b}/project`) outside the repo, generates sandbox settings + MCP config into `~/.claude/.agent-gen/`, and starts `claude` with `--settings`, `--mcp-config`, `--strict-mcp-config`. Only `with` gets the knowledge MCP server (stdio).
 
 ## Documentation (read these first)
@@ -25,6 +27,7 @@ This is a 2-day hackathon project. The aim of the project is to explore the Open
 - [`docs/demo-internals.md`](docs/demo-internals.md) - How and why the sandboxing/isolation works; leak vectors and gotchas.
 - [`docs/testing-the-demos.md`](docs/testing-the-demos.md) - Checklist for verifying isolation, the no-knowledge baseline, grounding, and judgement (incl. the "Quokka rota" unknown-term test).
 - [`docs/mcp-server.md`](docs/mcp-server.md) - The MCP server: config, tools/endpoints, and how it reads a bundle.
+- [`docs/metadata-maintenance.md`](docs/metadata-maintenance.md) - What CI writes into the bundle, how to fix `E12`, rollout and caveats.
 
 Keep these in sync when you change the launcher, the server, or the layout.
 
@@ -35,6 +38,10 @@ cd mcp-server && npm install && npm run build   # once
 scripts/run-demo.sh with        # knowledge via MCP only
 scripts/run-demo.sh without     # no knowledge
 ```
+
+## Metadata maintenance
+
+CI owns, and overwrites on every sync: `generated.at`/`generated.by` on each concept, every folder `index.md`, `log.md`, and `okf_version` in the root `index.md` (the root index body stays hand-written). Git is the source of truth. `verified` is never automated. New concepts can omit `generated`. `generated.by` comes from the content commit's `Co-Authored-By` trailer, so **end your commit messages with your own trailer** (e.g. `Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>`) or your work is attributed to the human author. Attribution enforcement (`E12`) is stricter than OKF §11 on purpose. `.pages.yml` hides the CI-owned files from the CMS.
 
 ## Sandboxing notes (verified empirically, Claude Code 2.1.x)
 
