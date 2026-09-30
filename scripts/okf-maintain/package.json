@@ -1,0 +1,18 @@
+{
+  "name": "okf-maintain",
+  "version": "0.1.0",
+  "description": "Keeps the CI-owned parts of an OKF bundle (generated, folder indexes, log.md) in sync with git history, and checks the bundle.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "test": "tsc && node --test dist/*.test.js"
+  },
+  "dependencies": {
+    "yaml": "^2.8.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.0"
+  }
+}

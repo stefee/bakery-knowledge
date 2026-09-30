@@ -1,0 +1,130 @@
+# Keeps the CI-owned parts of the OKF bundle (generated, folder indexes, log.md, okf_version)
+# in sync with git history, and posts the `okf-check` commit status that main requires.
+# Design: docs/specs/metadata-automation.md. Operations: docs/metadata-maintenance.md.
+#
+# A `push` run uses the workflow file on `editing`, so merge main into editing by hand
+# after this file or scripts/okf-maintain/ changes.
+name: OKF sync
+
+on:
+  push:
+    branches: [editing]
+  # Re-run after an author links their commit email to their GitHub account (E12).
+  workflow_dispatch:
+  # No `paths:` filter on purpose: okf-check must exist on every head commit that can merge.
+  pull_request:
+    branches: [main]
+
+env:
+  OKF_BUNDLE_PATH: knowledge/hearth-and-wheel
+  GITHUB_TOKEN: ${{ github.token }}
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  # Push to editing: sync, commit, check, post status.
+  sync:
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/editing')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      statuses: write
+    concurrency:
+      group: okf-sync-editing
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: editing
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install okf-maintain
+        working-directory: scripts/okf-maintain
+        run: npm ci && npm run build
+
+      - name: Sync
+        run: node scripts/okf-maintain/dist/cli.js sync
+
+      - name: Commit and push
+        id: commit
+        run: |
+          set -euo pipefail
+          if [ -n "$(git status --porcelain -- "$OKF_BUNDLE_PATH")" ]; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add -- "$OKF_BUNDLE_PATH"
+            git commit -m 'Sync OKF metadata'
+            # No force. If a CMS save landed mid-run the push is rejected; the newer push
+            # triggers its own run, which derives the same result from the newer history.
+            if ! out=$(git push origin HEAD:editing 2>&1); then
+              echo "$out"
+              if grep -qiE 'rejected|non-fast-forward|fetch first' <<< "$out"; then
+                echo "Push rejected (editing moved); the newer run will take over."
+                echo "skip=true" >> "$GITHUB_OUTPUT"
+                exit 0
+              fi
+              exit 1
+            fi
+          fi
+          echo "head=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Check
+        id: check
+        if: steps.commit.outputs.skip != 'true'
+        run: |
+          set +e
+          node scripts/okf-maintain/dist/cli.js check
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Post okf-check status
+        if: steps.commit.outputs.skip != 'true'
+        run: |
+          if [ "${{ steps.check.outputs.code }}" = "0" ]; then state=success; desc='Bundle is conformant and in sync'; else state=failure; desc='Bundle is non-conformant or has drifted'; fi
+          gh api "repos/$GITHUB_REPOSITORY/statuses/${{ steps.commit.outputs.head }}" \
+            -f state="$state" -f context=okf-check -f description="$desc" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+
+      - name: Fail if check failed
+        if: steps.commit.outputs.skip != 'true' && steps.check.outputs.code != '0'
+        run: exit 1
+
+  # PRs from branches other than editing: check only, post status on the PR head.
+  check-pr:
+    if: github.event_name == 'pull_request' && github.head_ref != 'editing'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      statuses: write
+    concurrency:
+      group: okf-check-pr-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install okf-maintain
+        working-directory: scripts/okf-maintain
+        run: npm ci && npm run build
+
+      - name: Check
+        id: check
+        run: |
+          set +e
+          node scripts/okf-maintain/dist/cli.js check
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Post okf-check status
+        run: |
+          if [ "${{ steps.check.outputs.code }}" = "0" ]; then state=success; desc='Bundle is conformant and in sync'; else state=failure; desc='Bundle is non-conformant or has drifted'; fi
+          gh api "repos/$GITHUB_REPOSITORY/statuses/${{ github.event.pull_request.head.sha }}" \
+            -f state="$state" -f context=okf-check -f description="$desc" \
+            -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+
+      - name: Fail if check failed
+        if: steps.check.outputs.code != '0'
+        run: exit 1

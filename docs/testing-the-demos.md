@@ -9,6 +9,8 @@ There are four things to establish:
 3. **Grounding.** `with` retrieves and uses the knowledge through the MCP tools.
 4. **Judgement.** `with` uses the tools when it should, leaves them alone when it shouldn't, and doesn't invent answers when the knowledge base has nothing.
 
+> **Note:** the knowledge folder indexes are generated from concept descriptions (see [`metadata-maintenance.md`](metadata-maintenance.md)), so `list_knowledge` output is longer than it used to be. Re-run the grounding checks below after the first sync reaches `main`.
+
 ## Setup
 
 Prerequisites: macOS (the sandbox is Seatbelt), Node.js and npm, `rsync`, `jq`, and `claude` on your `PATH` and logged in. These tests make real model calls, so each `demo_run` costs a little and takes 30-60 seconds.

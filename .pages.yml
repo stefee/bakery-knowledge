@@ -1,6 +1,9 @@
 # Pages CMS config for editing an OKF v0.2 bundle (see open-knowledge-format/SPEC.md).
-# Deliberately covers only a subset of the spec. Fields not listed here (resource, generated,
+# Deliberately covers only a subset of the spec. Fields not listed here (resource,
 # sources, stale_after, computation fields, ...) are not exposed for editing.
+# `generated`, the folder index.md files and log.md are written by CI from git history
+# (scripts/okf-maintain, see docs/metadata-maintenance.md), so they are not exposed either:
+# Pages CMS has no read-only option and edits would be overwritten by the next sync.
 # Timestamps are plain strings (ISO 8601 with explicit offset, e.g. 2026-06-30T14:00:00Z):
 # Pages CMS date formatting uses local time, which cannot emit a true UTC "Z".
 
@@ -96,7 +99,7 @@ content:
         options:
           format: markdown
 
-  # --- Reserved files (§8, §9) ---
+  # --- Reserved files (§8, §9): only the root index body is hand-written ---
   - name: root-index
     label: Bundle root index
     type: file
@@ -106,34 +109,9 @@ content:
       - name: okf_version
         label: OKF version
         type: string
-        description: The only frontmatter permitted in an index.md.
+        description: The only frontmatter permitted in an index.md. Maintained by CI; leave as is.
       - name: body
         label: Body
         type: rich-text
         options:
           format: markdown
-
-  - name: log
-    label: Bundle log
-    type: file
-    path: knowledge/hearth-and-wheel/log.md
-    format: raw
-
-  # Folder indexes carry no frontmatter (§8).
-  - name: bakehouse-index
-    label: Bakehouse index
-    type: file
-    path: knowledge/hearth-and-wheel/bakehouse/index.md
-    format: raw
-
-  - name: wholesale-round-index
-    label: Wholesale Round index
-    type: file
-    path: knowledge/hearth-and-wheel/wholesale-round/index.md
-    format: raw
-
-  - name: shop-and-customer-line-index
-    label: Shop and Customer Line index
-    type: file
-    path: knowledge/hearth-and-wheel/shop-and-customer-line/index.md
-    format: raw

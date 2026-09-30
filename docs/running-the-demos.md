@@ -2,6 +2,8 @@
 
 A guide for anyone who just wants to run (or live-present) the two demo projects. For *why* the sandboxing works the way it does, see [demo-internals.md](demo-internals.md). For the knowledge server, see [mcp-server.md](mcp-server.md).
 
+> **Note:** the knowledge folder indexes are generated from concept descriptions (see [`metadata-maintenance.md`](metadata-maintenance.md)), so `list_knowledge` output is longer than it used to be. Re-run the grounding checks below after the first sync reaches `main`.
+
 ## What you're demoing
 
 Two Claude Code sessions, identical in every way except one:

@@ -1,5 +1,6 @@
 # Repository settings, synced by the Settings app (https://github.com/apps/settings)
 # from the default branch. Once this is live, main can only change through a reviewed PR.
+# Every other branch is writable; main's protection is what guards it.
 
 repository:
   # Merging the editing -> main PR must not delete the editing branch (the CMS writes there).
@@ -19,24 +20,3 @@ branches:
       enforce_admins: true
       # Team/user push restrictions are only available on organisation-owned repos.
       restrictions: null
-
-rulesets:
-  # The CMS may only write to `editing`. Every other branch (main is covered above)
-  # is locked against creation, direct updates, force pushes and deletion.
-  # No bypass actors: this applies to admins as well.
-  - name: cms writes to editing only
-    target: branch
-    enforcement: active
-    conditions:
-      ref_name:
-        include:
-          - "~ALL"
-        exclude:
-          - refs/heads/editing
-          - refs/heads/main
-    rules:
-      - type: creation
-      - type: update
-      - type: deletion
-      - type: non_fast_forward
-    bypass_actors: []
