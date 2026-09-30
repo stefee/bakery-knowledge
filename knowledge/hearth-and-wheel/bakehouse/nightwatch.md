@@ -3,7 +3,7 @@ type: System
 title: Nightwatch
 description: The overnight monitoring setup, temperature probes plus a duty baker, that watches the oven and proving cabinets, calculates the Ember Index, and flags anomalies in real time.
 tags: [bakehouse, monitoring, alerts, overnight]
-generated: { by: claude-code/claude-sonnet-5-5, at: 2026-09-29T10:22:51Z }
+generated: { by: claude-code/claude-sonnet-5-5, at: 2026-09-29T10:41:53Z }
 status: stable
 not:
   - term: "a person or shift name only"

@@ -3,7 +3,7 @@ type: AI Agent
 title: Michael
 description: Hearth & Wheel's customer-facing AI telephone assistant, styled and voiced on TV presenter Michael McIntyre, who answers the bakery's public phone line.
 tags: [customer-line, ai-agent, phone, retail, wholesale]
-generated: { by: claude-code/claude-sonnet-5-5, at: 2026-09-29T10:22:51Z }
+generated: { by: claude-code/claude-sonnet-5-5, at: 2026-09-29T10:41:53Z }
 status: stable
 not:
   - term: "an internal staff tool or chatbot"

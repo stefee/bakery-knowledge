@@ -1,5 +1,11 @@
 # Directory Update Log
 
 ## 2026-09-29
-* **Creation**: Wrote the initial concepts for the three domains: [Kettle Process](/bakehouse/kettle-process.md), [Ember Index](/bakehouse/ember-index.md), [Nightwatch](/bakehouse/nightwatch.md), [Constellations](/wholesale-round/constellations.md), [The Wheel](/wholesale-round/the-wheel.md), [Looming](/wholesale-round/looming.md) and [Michael](/shop-and-customer-line/michael.md).
-* **Initialization**: Created foundational directory structure.
+* **Initialization**: Created the bundle.
+* **Creation**: [Ember Index](/bakehouse/ember-index.md)
+* **Creation**: [The Kettle Process](/bakehouse/kettle-process.md)
+* **Creation**: [Nightwatch](/bakehouse/nightwatch.md)
+* **Creation**: [Michael](/shop-and-customer-line/michael.md)
+* **Creation**: [Constellations](/wholesale-round/constellations.md)
+* **Creation**: [Looming](/wholesale-round/looming.md)
+* **Creation**: [The Wheel](/wholesale-round/the-wheel.md)

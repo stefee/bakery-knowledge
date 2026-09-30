@@ -3,7 +3,7 @@ type: Status
 title: Looming
 description: The status of a wholesale account whose standing order is approaching renewal or renegotiation, for example a 3-month bread supply agreement.
 tags: [wholesale, renewal, accounts, status]
-generated: { by: claude-code/claude-sonnet-5-5, at: 2026-09-29T10:22:51Z }
+generated: { by: claude-code/claude-sonnet-5-5, at: 2026-09-29T10:41:53Z }
 status: stable
 not:
   - term: "late, overdue, or at risk of churning"
