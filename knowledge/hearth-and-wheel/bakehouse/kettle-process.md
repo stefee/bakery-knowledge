@@ -1,16 +1,21 @@
 ---
 type: Process
 title: The Kettle Process
-description: The bakery's overnight sourdough routine, in which starter is fed and dough proves for about 14 hours in a steam-kettle-humidified cabinet before shaping and baking.
-tags: [bakehouse, production, sourdough, proving]
-generated: { by: claude-code/claude-sonnet-5-5, at: 2026-09-29T10:22:51Z }
+description: The bakery's overnight sourdough routine, in which starter is fed
+  and dough proves for about 14 hours in a steam-kettle-humidified cabinet
+  before shaping and baking.
+tags:
+  - bakehouse
+  - production
+  - sourdough
+  - proving
 status: stable
 not:
-  - term: "any batch that is still in the bakehouse overnight"
-    why: "only batches that are still proving are 'in the Kettle Process'. Once shaped and in the oven they have left it."
-    instead: "batches that are proving and not yet ready for the oven"
+  - term: any batch that is still in the bakehouse overnight
+    why: only batches that are still proving are 'in the Kettle Process'. Once
+      shaped and in the oven they have left it.
+    instead: batches that are proving and not yet ready for the oven
 ---
-
 # Definition
 
 The **Kettle Process** is Hearth & Wheel's overnight sourdough routine. Starter is fed and the dough is left in a proving cabinet humidified by a steam kettle for roughly **14 hours**, after which it is shaped and baked in the wood-fired oven.
@@ -38,3 +43,5 @@ Dough that is under- or over-proved bakes unevenly. That shows up as a spike in 
 This is an editing test.
 
 This is another editing test.
+
+This is a third editing test using Pages CMS.
