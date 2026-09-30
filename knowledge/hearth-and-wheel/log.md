@@ -1,5 +1,8 @@
 # Directory Update Log
 
+## 2026-09-30
+* **Update**: [Ember Index](/bakehouse/ember-index.md)
+
 ## 2026-09-29
 * **Initialization**: Created the bundle.
 * **Creation**: [Ember Index](/bakehouse/ember-index.md)
