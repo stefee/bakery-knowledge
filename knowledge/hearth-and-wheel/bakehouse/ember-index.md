@@ -3,7 +3,7 @@ type: Metric
 title: Ember Index
 description: A 0-100 score generated from oven temperature logs showing how stable the wood-fired oven's heat was overnight; a high score is bad.
 tags: [bakehouse, oven, metric, nightwatch]
-generated: { by: claude-code/claude-sonnet-5-5, at: 2026-09-29T10:22:51Z }
+generated: { by: claude-code/claude-sonnet-5-5, at: 2026-09-29T10:41:53Z }
 status: stable
 not:
   - term: "a quality score where higher is better"

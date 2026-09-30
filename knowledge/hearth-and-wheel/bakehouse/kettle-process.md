@@ -3,7 +3,7 @@ type: Process
 title: The Kettle Process
 description: The bakery's overnight sourdough routine, in which starter is fed and dough proves for about 14 hours in a steam-kettle-humidified cabinet before shaping and baking.
 tags: [bakehouse, production, sourdough, proving]
-generated: { by: claude-code/claude-sonnet-5-5, at: 2026-09-29T10:22:51Z }
+generated: { by: claude-code/claude-sonnet-5-5, at: 2026-09-29T10:41:53Z }
 status: stable
 not:
   - term: "any batch that is still in the bakehouse overnight"

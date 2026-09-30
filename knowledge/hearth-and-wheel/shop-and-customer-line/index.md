@@ -1,3 +1,3 @@
 # AI Agent
 
-* [Michael](michael.md) - The customer-facing AI telephone assistant that answers the bakery's public phone line.
+* [Michael](michael.md) - Hearth & Wheel's customer-facing AI telephone assistant, styled and voiced on TV presenter Michael McIntyre, who answers the bakery's public phone line.
