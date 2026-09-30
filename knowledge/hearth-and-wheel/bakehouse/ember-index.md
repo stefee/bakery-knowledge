@@ -15,6 +15,7 @@ not:
       or unevenly.
     instead: "read a high Ember Index as a warning: risk of scorched crusts or
       undercooked loaves"
+generated: { by: human:stefee, at: 2026-09-30T14:32:51Z }
 ---
 # Definition
 
